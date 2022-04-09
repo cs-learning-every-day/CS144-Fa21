@@ -1,3 +1,4 @@
+> [My Notes](https://github.com/cs-learning-every-day/CS144-Fa21/notes)
 For build prereqs, see [the CS144 VM setup instructions](https://web.stanford.edu/class/cs144/vm_howto).
 
 ## Sponge quickstart
