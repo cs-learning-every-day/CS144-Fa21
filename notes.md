@@ -1,6 +1,6 @@
 #### 2022 CS144 实验笔记
 
-- [x] Lab 0 Networking Warmup
+- [x] Lab 0 Networking Warmup 2022/4/9
 - [ ] Lab 1 Stitching Substrings Into a Byte Stream
 - [ ] Lab 2 the TCP Receiver
 - [ ] Lab 3 the TCP Sender
