@@ -18,4 +18,4 @@
 #### Lab0
 get_URL: 模拟文档中做过手动发HTTP报文，详读文档。
 
-ByteStream类似一个双端队列，一端读，一端写。
+ByteStream类似一个双端队列，一端读，一端写。有些描述不太清楚，例如pop_output、peek_output、read中的参数len超出范围该如何做。我这里直接取可用长度的最小值了来处理了。
