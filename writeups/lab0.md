@@ -1,9 +1,9 @@
 Lab 0 Writeup
 =============
 
-My name: [your name here]
+My name: [Tesla]
 
-My SUNet ID: [your sunetid here]
+My SUNet ID: [001]
 
 I collaborated with: [list sunetids here]
 
