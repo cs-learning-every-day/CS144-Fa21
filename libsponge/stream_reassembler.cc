@@ -16,6 +16,7 @@ using namespace std;
 StreamReassembler::StreamReassembler(const size_t capacity) 
     : _output(capacity), 
     _capacity(capacity),
+    // _eof_end_idx(capacity + 1),
     _buf(capacity, 0),
     _bitmap(capacity, false) {}
 
@@ -66,6 +67,8 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
         _output.write(_data);
     }
 
+    // + 1是 判断都为0时的特殊情况(可以用个别的值标记 例如上面构造时用capacity+1初始化)
+    // 上面_eof_end_idx记得也要加一
     if (_output.bytes_written() + 1 == _eof_end_idx) {
         _output.end_input();
     }
