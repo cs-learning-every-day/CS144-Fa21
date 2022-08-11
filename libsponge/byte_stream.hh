@@ -23,7 +23,6 @@ class ByteStream {
     size_t _bytes_written{0};
     size_t _bytes_read{0};
     std::deque<char> _stream{};
-    bool _eof{false};
     bool _end_input{false};
     
   public:

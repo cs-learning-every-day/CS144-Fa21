@@ -33,7 +33,7 @@ string ByteStream::peek_output(const size_t len) const {
     for (size_t i = 0; i < n; i++) {
         res.push_back(_stream[i]);
     }    
-    return std::move(res);
+    return res;
 }
 
 //! \param[in] len bytes will be removed from the output side of the buffer
@@ -52,7 +52,7 @@ void ByteStream::pop_output(const size_t len) {
 std::string ByteStream::read(const size_t len) {
     string res = peek_output(len);
     pop_output(len);
-    return std::move(res);
+    return res;
 }
 
 void ByteStream::end_input() {
