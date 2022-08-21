@@ -14,6 +14,7 @@
 > 跟着文档走，我这里没有使用虚拟机
 
 #### 调试
+> https://www.inlighting.org/archives/2021-cs144-notes
 
 #### Lab0
 get_URL: 模拟文档中做过手动发HTTP报文，详读文档。
