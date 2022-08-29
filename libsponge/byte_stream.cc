@@ -1,5 +1,5 @@
 #include "byte_stream.hh"
-
+#include <iostream>
 // Dummy implementation of a flow-controlled in-memory byte stream.
 
 // For Lab 0, please replace with a real implementation that passes the
@@ -22,6 +22,7 @@ size_t ByteStream::write(const string &data) {
         _stream.push_back(data[i]);
     }
     _bytes_written += n;
+    // std::cerr << "buffer writens: " << _bytes_written << std::endl;
     return n;
 }
 

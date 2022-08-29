@@ -2,7 +2,7 @@
 
 - [x] Lab 0 Networking Warmup 2022/4/9
 - [x] Lab 1 Stitching Substrings Into a Byte Stream
-- [ ] Lab 2 the TCP Receiver
+- [x] Lab 2 the TCP Receiver
 - [ ] Lab 3 the TCP Sender
 - [ ] Lab 4 the TCP connection
 - [ ] Lab 5 the network interface
@@ -24,3 +24,5 @@ ByteStream类似一个双端队列，一端读，一端写。有些描述不太�
 
 #### Lab1
 面向测试用例编程，细节有点多，本来眼看只剩一个错误，发现逻辑大体不符，修改后又新出几个错误。就人肉Debug + 日志输出来看。
+
+#### Lab2

@@ -26,11 +26,13 @@ StreamReassembler::StreamReassembler(const size_t capacity)
 void StreamReassembler::push_substring(const string &data, const size_t index, const bool eof) {
     auto used_capacity = _unassembled_bytes + _output.buffer_size();
     if (used_capacity >= _capacity) {
+        // std::cerr << "push_substring is full" << std::endl;
         return;
     }
 
     if (eof) {
         _eof_end_idx = index + data.size() + 1;
+        // std::cerr << "_eof_end_idx: " << _eof_end_idx << std::endl;
     }
     
     // 存入数据
@@ -64,6 +66,7 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
         }
         _first_unread_idx = _first_unassembled_idx;
         _unassembled_bytes -= len;
+        // std::cerr << "_data: " << _data << std::endl;
         _output.write(_data);
     }
 
@@ -72,6 +75,7 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     if (_output.bytes_written() + 1 == _eof_end_idx) {
         _output.end_input();
     }
+    // std::cerr << "written: " << _output.bytes_written() << " _eof_end_idx:" << _eof_end_idx << std::endl;
 }
 
 size_t StreamReassembler::unassembled_bytes() const { 
