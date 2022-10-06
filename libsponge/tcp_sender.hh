@@ -31,7 +31,21 @@ class TCPSender {
 
     //! the (absolute) sequence number for the next byte to be sent
     uint64_t _next_seqno{0};
+    //! 第一个未确认的seqno
+    uint64_t _send_base_seqno{0};
+    uint16_t _window_size{0};
 
+    uint32_t _consecutive_retransmissions{0};
+    bool _syn_flag{false};
+    bool _fin_flag{false};
+    //! 需要等待ack的segment
+    std::queue<TCPSegment> _segments_wait{};
+    bool _timer_running{false};
+    uint64_t _rto_timeout;
+    uint64_t _ticks{0};
+
+
+    void send_tcp_segment(TCPSegment &seg);
   public:
     //! Initialize a TCPSender
     TCPSender(const size_t capacity = TCPConfig::DEFAULT_CAPACITY,
