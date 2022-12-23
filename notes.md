@@ -19,7 +19,23 @@
 
 #### 配置环境
 > 跟着文档走，我这里没有使用虚拟机
+
+```
+wget https://web.stanford.edu/class/cs144/vm_howto/setup_dev_env.sh
+chmod +x setup_dev_env.sh
+./setup_dev_env
+
+sudo apt-get install doxygen clang-format
+sudo apt install cmake
+
+mkdir build && cd build
+cmake ..
+make format
+make -j4 && make check_lab0
+```
+
 > clang-format --style=google -i xx.cc
+
 - [Formatting Cmake](https://dev.to/10xlearner/formatting-cmake-4dle)
 
 #### 调试
