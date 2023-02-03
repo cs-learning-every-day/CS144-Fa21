@@ -1,4 +1,4 @@
-#### 2022 CS144 实验笔记
+#### CS144 实验笔记
 
 - [x] Lab 0 Networking Warmup
 - [x] Lab 1 Stitching Substrings Into a Byte Stream
@@ -8,13 +8,6 @@
 - [ ] Lab 5 the network interface
 - [ ] Lab 6 IP routing
 - [ ] Lab 7 Putting it all together (Use your own Internet infrastructures to talk with each other, so cool ! )
-
-
-#### 笔记参考
-- https://tarplkpqsm.feishu.cn/docx/doxcnpBEN4SG3vA9pVyCoANigBh
-- https://www.cnblogs.com/weijunji/p/cs144-study-2.html
-- https://www.epis2048.net/2022/cs144-lab3/
-
 
 
 #### 配置环境
@@ -59,3 +52,6 @@ ByteStream类似一个双端队列，一端读，一端写。有些描述不太�
 不是很懂，里面细节有点多，又是面向测试用例编程，多看测试用例。
 
 对着自顶向下看TCP部分。
+
+#### Lab4
+先通读《Linux高性能服务器编程》Ch1-4 TCP相关的内容。
