@@ -1,6 +1,8 @@
 #include "tcp_connection.hh"
 
+#include <algorithm>
 #include <iostream>
+#include <limits>
 
 // Dummy implementation of a TCP connection
 
@@ -65,10 +67,11 @@ void TCPConnection::send_segments() {
     // see _sender.segments_out()
     // need set ack and window size from receiver
     if (_receiver.ackno().has_value()) {
-      seg.header().ack = true ;
+      seg.header().ack = true;
       seg.header().ackno = _receiver.ackno().value();
     }
-    seg.header().win = _receiver.window_size();
+    size_t max_window_size = std::numeric_limits<uint16_t>::max();
+    seg.header().win = std::min(max_window_size, _receiver.window_size());
     _segments_out.push(seg);
   }
 }
