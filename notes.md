@@ -50,4 +50,9 @@ ByteStream类似一个双端队列，一端读，一端写。有些描述不太�
 对着自顶向下看TCP部分。
 
 #### Lab4
-先通读《Linux高性能服务器编程》Ch1-4 TCP相关的内容。
+先通读《Linux高性能服务器编程》Ch1-4 TCP相关的内容，理解TCP状态机。
+去tcp_state.cc 看TCP某个状态下sender和receiver的状态。
+![Pasted-image-20230203094714](https://cdn.staticaly.com/gh/XmchxUp/cloudimg@master/20230204/Pasted-image-20230203094714.1lcwl1q38lmo.webp)
+![image](https://cdn.staticaly.com/gh/XmchxUp/cloudimg@master/20230204/image.69pye5ub0qs0.webp)
+![image](https://cdn.staticaly.com/gh/XmchxUp/cloudimg@master/20230204/image.3fg6td8rc140.webp)
+![image](https://cdn.staticaly.com/gh/XmchxUp/cloudimg@master/20230204/image.72r1vsp9g0g0.webp)
