@@ -29,8 +29,14 @@ size_t TCPConnection::unassembled_bytes() const {
 size_t TCPConnection::time_since_last_segment_received() const { return {}; }
 
 void TCPConnection::segment_received(const TCPSegment &seg) {
+  // keep-alive
+  if (_receiver.ackno().has_value() and
+      (seg.length_in_sequence_space() == 0) and
+      seg.header().seqno == _receiver.ackno().value() - 1) {
+    _sender.send_empty_segment();
+  }
   // RST
-  if (seg.header().rst) {
+  else if (seg.header().rst) {
     _sender.stream_in().set_error();
     _receiver.stream_out().set_error();
     // TODO: close connection
@@ -65,18 +71,80 @@ void TCPConnection::segment_received(const TCPSegment &seg) {
       }
     }
   }
-
-  if (!_receiver.ackno().has_value()) {
+  // SYN_RCVD
+  else if (_sender.next_seqno_absolute() > 0 &&
+           _sender.next_seqno_absolute() == _sender.bytes_in_flight() &&
+           _receiver.ackno().has_value() &&
+           !_receiver.stream_out().input_ended()) {
+    if (seg.header().ack) {
+      _receiver.segment_received(seg);
+      _sender.ack_received(seg.header().ackno, seg.header().win);
+    }
   }
-
-  if (seg.header().ack) {
+  // ESTABLISHED
+  else if (_sender.next_seqno_absolute() > _sender.bytes_in_flight() &&
+           !_sender.stream_in().eof()) {
+    _receiver.segment_received(seg);
     _sender.ack_received(seg.header().ackno, seg.header().win);
+    if (seg.length_in_sequence_space() > 0) {
+      _sender.send_empty_segment();
+    }
+    _sender.fill_window();
+    send_segments();
   }
-  // keep-alive
-  if (_receiver.ackno().has_value() and
-      (seg.length_in_sequence_space() == 0) and
-      seg.header().seqno == _receiver.ackno().value() - 1) {
-    _sender.send_empty_segment();
+  // FIN_WAIT_1
+  else if (_sender.stream_in().eof() &&
+           _sender.next_seqno_absolute() ==
+               _sender.stream_in().bytes_written() + 2 &&
+           _sender.bytes_in_flight() > 0 && _receiver.ackno().has_value() &&
+           !_receiver.stream_out().input_ended()) {
+    if (seg.header().fin) {
+      // -> TIME_WAIT/CLOSING
+      _receiver.segment_received(seg);
+      _sender.ack_received(seg.header().ackno, seg.header().win);
+      _sender.send_empty_segment();
+      send_segments();
+    } else if (seg.header().ack) {
+      // -> FIN_WAIT_2
+      _receiver.segment_received(seg);
+      _sender.ack_received(seg.header().ackno, seg.header().win);
+      send_segments();
+    }
+  }
+  // FIN_WAIT_2
+  else if (_sender.stream_in().eof() &&
+           _sender.next_seqno_absolute() ==
+               _sender.stream_in().bytes_written() + 2 &&
+           _sender.bytes_in_flight() == 0 && _receiver.ackno().has_value() &&
+           !_receiver.stream_out().input_ended()) {
+    if (seg.header().fin) {
+      // TIME_WAIT
+      _receiver.segment_received(seg);
+      _sender.ack_received(seg.header().ackno, seg.header().win);
+      _sender.send_empty_segment();
+      send_segments();
+    }
+  }
+  // TIME_WAIT
+  else if (_sender.stream_in().eof() &&
+           _sender.next_seqno_absolute() ==
+               _sender.stream_in().bytes_written() + 2 &&
+           _sender.bytes_in_flight() == 0 &&
+           _receiver.stream_out().input_ended()) {
+    if (seg.header().fin) {
+      // TIME_WAIT
+      _receiver.segment_received(seg);
+      _sender.ack_received(seg.header().ackno, seg.header().win);
+      _sender.send_empty_segment();
+      send_segments();
+    }
+  }
+  // ELSE
+  else {
+    _receiver.segment_received(seg);
+    _sender.ack_received(seg.header().ackno, seg.header().win);
+    _sender.fill_window();
+    send_segments();
   }
 }
 
