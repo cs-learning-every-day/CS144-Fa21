@@ -31,10 +31,6 @@ make -j4 && make check_lab0
 
 - [Formatting Cmake](https://dev.to/10xlearner/formatting-cmake-4dle)
 
-#### 调试
-> https://www.inlighting.org/archives/2021-cs144-notes
-> https://www.cnblogs.com/kangyupl/p/stanford_cs144_labs.html
-
 #### Lab0
 get_URL: 模拟文档中做过手动发HTTP报文，详读文档。
 
