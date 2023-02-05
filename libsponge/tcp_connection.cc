@@ -34,6 +34,8 @@ void TCPConnection::segment_received(const TCPSegment &seg) {
   if (!active()) {
     return;
   }
+  _time_since_last_segment_received = 0;
+
   // RST
   if (seg.header().rst) {
     unclean_close();
@@ -168,6 +170,7 @@ void TCPConnection::tick(const size_t ms_since_last_tick) {
     rst.header().rst = true;
     _segments_out.push(rst);
     unclean_close();
+    return;
   }
   send_segments();
 }
