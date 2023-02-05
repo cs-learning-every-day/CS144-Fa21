@@ -210,14 +210,15 @@ void TCPConnection::unclean_close() {
 }
 
 void TCPConnection::clean_close() {
-  if (_receiver.stream_out().input_ended() && !_sender.stream_in().eof()) {
-    _linger_after_streams_finish = false;
-  }
-  if (_sender.bytes_in_flight() == 0 && _sender.stream_in().eof() &&
-      _receiver.stream_out().input_ended()) {
-    if (!_linger_after_streams_finish ||
-        time_since_last_segment_received() >= 10 * _cfg.rt_timeout) {
-      _active = false;
+  if (_receiver.stream_out().input_ended()) {
+    if (!_sender.stream_in().eof()) {
+      _linger_after_streams_finish = false;
+    }
+    if (_sender.bytes_in_flight() == 0 && _sender.stream_in().eof()) {
+      if (!_linger_after_streams_finish ||
+          time_since_last_segment_received() >= 10 * _cfg.rt_timeout) {
+        _active = false;
+      }
     }
   }
 }
