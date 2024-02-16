@@ -1,4 +1,5 @@
 #include "byte_stream.hh"
+
 #include <iostream>
 // Dummy implementation of a flow-controlled in-memory byte stream.
 
@@ -8,12 +9,11 @@
 // You will need to add private members to the class declaration in `byte_stream.hh`
 
 template <typename... Targs>
-void DUMMY_CODE(Targs &&... /* unused */) {}
+void DUMMY_CODE(Targs &&.../* unused */) {}
 
 using namespace std;
 
-ByteStream::ByteStream(const size_t capacity)
- : _capacity(capacity) {  }
+ByteStream::ByteStream(const size_t capacity) : _capacity(capacity) {}
 
 size_t ByteStream::write(const string &data) {
     size_t n = remaining_capacity();
@@ -33,12 +33,12 @@ string ByteStream::peek_output(const size_t len) const {
     n = min(n, len);
     for (size_t i = 0; i < n; i++) {
         res.push_back(_stream[i]);
-    }    
+    }
     return res;
 }
 
 //! \param[in] len bytes will be removed from the output side of the buffer
-void ByteStream::pop_output(const size_t len) { 
+void ByteStream::pop_output(const size_t len) {
     size_t n = buffer_size();
     n = min(n, len);
     for (size_t i = 0; i < n; i++) {
@@ -56,9 +56,7 @@ std::string ByteStream::read(const size_t len) {
     return res;
 }
 
-void ByteStream::end_input() {
-    _end_input = true;
-}
+void ByteStream::end_input() { _end_input = true; }
 
 bool ByteStream::input_ended() const { return _end_input; }
 
@@ -72,6 +70,4 @@ size_t ByteStream::bytes_written() const { return _bytes_written; }
 
 size_t ByteStream::bytes_read() const { return _bytes_read; }
 
-size_t ByteStream::remaining_capacity() const { 
-    return _capacity - buffer_size();
-}
+size_t ByteStream::remaining_capacity() const { return _capacity - buffer_size(); }

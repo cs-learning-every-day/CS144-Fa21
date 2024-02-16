@@ -1,4 +1,5 @@
 #include "stream_reassembler.hh"
+
 #include <iostream>
 
 // Dummy implementation of a stream reassembler.
@@ -9,16 +10,17 @@
 // You will need to add private members to the class declaration in `stream_reassembler.hh`
 
 template <typename... Targs>
-void DUMMY_CODE(Targs &&... /* unused */) {}
+void DUMMY_CODE(Targs &&.../* unused */) {}
 
 using namespace std;
 
-StreamReassembler::StreamReassembler(const size_t capacity) 
-    : _output(capacity), 
-    _capacity(capacity),
+StreamReassembler::StreamReassembler(const size_t capacity)
+    : _output(capacity)
+    , _capacity(capacity)
+    ,
     // _eof_end_idx(capacity + 1),
-    _buf(capacity, 0),
-    _bitmap(capacity, false) {}
+    _buf(capacity, 0)
+    , _bitmap(capacity, false) {}
 
 //! \details This function accepts a substring (aka a segment) of bytes,
 //! possibly out-of-order, from the logical stream, and assembles any newly
@@ -34,7 +36,7 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
         _eof_end_idx = index + data.size() + 1;
         // std::cerr << "_eof_end_idx: " << _eof_end_idx << std::endl;
     }
-    
+
     // 存入数据
     size_t start_idx = max(index, _first_unassembled_idx);
     // 算出能储存的最大index 例如 容量为2 (0 1)未发出时，不能储存1后面的数据
@@ -50,24 +52,23 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
 
     // 更新状态 更新第一个未组装的索引
     end_idx = _first_unassembled_idx + _capacity;
-    while (_bitmap[_first_unassembled_idx % _capacity] &&
-            _first_unassembled_idx < end_idx) {
+    while (_bitmap[_first_unassembled_idx % _capacity] && _first_unassembled_idx < end_idx) {
         _first_unassembled_idx++;
     }
 
     // 发送数据
     if (_first_unread_idx < _first_unassembled_idx) {
         size_t len = (_first_unassembled_idx - _first_unread_idx);
-        string _data(len, 0);
+        string tmp_data(len, 0);
         for (size_t j = 0; j < len; j++) {
             auto t = (j + _first_unread_idx) % _capacity;
-            _data[j] = _buf[t];
+            tmp_data[j] = _buf[t];
             _bitmap[t] = false;
         }
         _first_unread_idx = _first_unassembled_idx;
         _unassembled_bytes -= len;
         // std::cerr << "_data: " << _data << std::endl;
-        _output.write(_data);
+        _output.write(tmp_data);
     }
 
     // + 1是 判断都为0时的特殊情况(可以用个别的值标记 例如上面构造时用capacity+1初始化)
@@ -78,10 +79,6 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
     // std::cerr << "written: " << _output.bytes_written() << " _eof_end_idx:" << _eof_end_idx << std::endl;
 }
 
-size_t StreamReassembler::unassembled_bytes() const { 
-    return _unassembled_bytes; 
-}
+size_t StreamReassembler::unassembled_bytes() const { return _unassembled_bytes; }
 
-bool StreamReassembler::empty() const { 
-    return unassembled_bytes() == 0; 
-}
+bool StreamReassembler::empty() const { return unassembled_bytes() == 0; }
