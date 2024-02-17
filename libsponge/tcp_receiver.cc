@@ -13,36 +13,39 @@ void DUMMY_CODE(Targs &&.../* unused */) {}
 using namespace std;
 
 void TCPReceiver::segment_received(const TCPSegment &seg) {
-  auto header = seg.header();
-  auto payload = seg.payload();
-  if (header.syn) {
-    _syn_flag = true;
-    _isn_no = header.seqno;
-  }
-  if (!_syn_flag) {
-    // std::cerr << "??" << std::endl;
-    return;
-  }
-  if (header.fin) {
-    _fin_flag = true;
-  }
-  // std::cerr << "_isn_no: " << _isn_no << std::endl;
-  uint64_t stream_idx = unwrap(header.seqno, _isn_no, 0) - (header.syn ? 0 : 1);
-  // std::cerr << "payload: " << payload.copy() << " stream_idx: " << stream_idx
-  // << std::endl;
-  _reassembler.push_substring(payload.copy(), stream_idx, header.fin);
-  // std::cerr << "buffer writens: " << stream_out().bytes_written() <<
-  // std::endl;
+    auto header = seg.header();
+    if (_isn_no == std::nullopt && !header.syn) {
+        // std::cerr << "??" << std::endl;
+        return;
+    }
+
+    if (header.syn) {
+        _isn_no = header.seqno;
+    }
+
+    // std::cerr << "_isn_no: " << _isn_no << std::endl;
+    // 获取reassembler的index，即Seq->AbsSeq
+    int64_t abs_seqno = unwrap(header.seqno + static_cast<int>(header.syn), _isn_no.value(), _check_point);
+    // std::cerr << "payload: " << payload.copy() << " stream_idx: " << stream_idx
+    // << std::endl;
+    // 将任何数据或流结束标记推到StreamReassembler，序号使用Stream Index，即AbsSeq - 1
+    _reassembler.push_substring(seg.payload().copy(), abs_seqno - 1, header.fin);
+    // std::cerr << "buffer writens: " << stream_out().bytes_written() <<
+    // std::endl;
+    _check_point += seg.length_in_sequence_space();
 }
 
 optional<WrappingInt32> TCPReceiver::ackno() const {
-  if (!_syn_flag) {
-    return std::nullopt;
-  }
-  return _isn_no + stream_out().bytes_written() + 1 +
-         ((_fin_flag && _reassembler.empty()) ? 1 : 0);
+    if (_isn_no == std::nullopt) {  // syn not set
+        return std::nullopt;
+    }
+    // Stream Index -> AbsSeq
+    uint64_t written = stream_out().bytes_written() + 1;
+    if (stream_out().input_ended()) {
+        written++;
+    }
+    // AbsSeq -> Seq
+    return wrap(written, _isn_no.value());
 }
 
-size_t TCPReceiver::window_size() const {
-  return _capacity - _reassembler.stream_out().buffer_size();
-}
+size_t TCPReceiver::window_size() const { return _capacity - stream_out().buffer_size(); }
